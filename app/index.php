@@ -7,7 +7,7 @@ $db = 'tp_db';
 $conn = new mysqli($host, $user, $pass, $db);
 
 if ($conn->connect_error) {
-    die("Connexion échouée : " . $conn->connect_error);
+    die("Connexion échouée mon gars : " . $conn->connect_error);
 }
 echo "Connexion MySQL réussie !<br>";
 
