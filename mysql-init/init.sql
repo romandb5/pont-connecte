@@ -1,2 +1,2 @@
-CREATE DATABASE IF NOT EXISTS tp_db;
-USE tp_db
+CREATE DATABASE IF NOT EXISTS pontconnecte;
+USE pontconnecte
