@@ -1,5 +1,4 @@
 <?php
-// --- 1. CONNEXION BASE DE DONNÉES ---
 $host = 'db';
 $user = 'Etudiant';
 $pass = 'P@ssword';
@@ -7,7 +6,6 @@ $db   = 'pontconnecte';
 
 $conn = new mysqli($host, $user, $pass, $db);
 
-// Vérification silencieuse (on n'affiche l'erreur que si ça plante vraiment)
 $db_status = "";
 if ($conn->connect_error) {
     $db_status = "<span style='color:red'>Erreur BDD: " . $conn->connect_error . "</span>";
@@ -23,7 +21,6 @@ if ($conn->connect_error) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PontConnect - Accueil</title>
     <style>
-        /* --- CSS : STYLE DE LA PAGE --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         
         body {
@@ -32,10 +29,9 @@ if ($conn->connect_error) {
             background-color: #f4f6f9;
         }
 
-        /* Barre latérale */
         .sidebar {
             width: 260px;
-            background-color: #003366; /* Bleu Marine du logo */
+            background-color: #003366; 
             color: white;
             display: flex;
             flex-direction: column;
@@ -68,7 +64,6 @@ if ($conn->connect_error) {
             transform: translateX(5px);
         }
 
-        /* Contenu Principal */
         .main-content {
             flex: 1;
             padding: 40px;
@@ -88,7 +83,6 @@ if ($conn->connect_error) {
         h1 { color: #003366; margin-bottom: 15px; font-size: 2.5rem; }
         p.intro { color: #666; font-size: 1.2rem; max-width: 600px; line-height: 1.6; }
         
-        /* Indicateur de statut BDD en bas à droite */
         .status-badge {
             position: fixed;
             bottom: 20px;
