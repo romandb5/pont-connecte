@@ -1,10 +1,168 @@
+/* --- Couleurs et Variables --- */
+:root {
+    --dk-blue-deep: #002d5a;
+    --dk-yellow: #ffb703;
+    --dk-text-soft: #5a6c7d;
+    --dk-bg-body: #f4f7fa;
+}
+
+/* --- Mise en page globale --- */
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e0eaf5 0%, #f4f7fa 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+}
+
+.main-content {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* --- La Carte Centrale --- */
+.login-card {
+    background: #ffffff;
+    max-width: 420px;
+    width: 100%;
+    padding: 30px 50px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 51, 102, 0.15);
+    border-top: 6px solid var(--dk-yellow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+/* --- Logo centré avec correction de décalage --- */
+.logo-box {
+    width: 160px;
+    margin: 0 auto 15px auto;
+    display: flex;
+    justify-content: center;
+}
+
+.logo-box img {
+    width: 100%;
+    height: auto;
+    transform: translateX(-8px); /* Correction visuelle */
+}
+
+h1 {
+    font-size: 1.8rem;
+    color: var(--dk-blue-deep);
+    margin-bottom: 5px;
+    font-weight: 800;
+}
+
+.intro {
+    color: var(--dk-text-soft);
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+/* --- Formulaire et Inputs --- */
+.login-form {
+    width: 100%;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: #004e92;
+    font-size: 0.95rem;
+}
+
+.input-group input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 15px;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #f8fafc;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--dk-yellow);
+    box-shadow: 0 0 0 4px rgba(255, 183, 3, 0.15);
+}
+
+.password-hint {
+    font-size: 0.8rem;
+    color: var(--dk-text-soft);
+    display: block;
+    margin-top: 5px;
+}
+
+/* --- Bouton Jaune --- */
+.btn-submit {
+    width: 100%;
+    background-color: var(--dk-yellow);
+    color: var(--dk-blue-deep);
+    border: none;
+    padding: 14px;
+    font-size: 1.1rem;
+    font-weight: 900;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(255, 183, 3, 0.3);
+}
+
+.btn-submit:hover {
+    background-color: var(--dk-blue-deep);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+/* --- Messages --- */
+.error-msg {
+    width: 100%;
+    background: #fee2e2;
+    color: #ef4444;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+    border: 1px solid #fca5a5;
+    box-sizing: border-box;
+}
+
 .success-msg {
-    background-color: #dcfce7;
+    width: 100%;
+    background: #dcfce7;
     color: #16a34a;
     padding: 10px;
     border-radius: 8px;
-    margin-top: 1rem;
-    font-weight: 500;
+    margin-bottom: 15px;
     text-align: center;
     border: 1px solid #bbf7d0;
+    box-sizing: border-box;
+}
+
+.back-link {
+    margin-top: 20px;
+    color: var(--dk-text-soft);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.back-link:hover {
+    color: var(--dk-blue-deep);
+    text-decoration: underline;
 }
