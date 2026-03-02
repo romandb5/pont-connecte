@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Si l'utilisateur est déjà connecté, on l'envoie sur l'accueil
 if (isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit();
@@ -14,11 +13,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'] ?? '';
 
     if (!empty($identifiant) && !empty($password)) {
-        // Connexion à la base de données
         $conn = new mysqli('db', 'Etudiant', 'P@ssword', 'pontconnecte');
         
-        if (!$conn->connect_error) {
-            // Requête préparée pour chercher l'utilisateur
+        if ($conn->connect_error) {
+            $erreur = "Erreur de connexion à la base de données.";
+        } else {
             $stmt = $conn->prepare("SELECT user_id, user_name, password, type_user_id FROM utilisateurs WHERE user_name = ?");
             $stmt->bind_param("s", $identifiant);
             $stmt->execute();
@@ -27,9 +26,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($result->num_rows === 1) {
                 $user = $result->fetch_assoc();
                 
-                // Vérification du mot de passe haché
-                if (password_verify($password, $user['password'])) {
-                    // Mot de passe correct ! On crée la session
+                if ($password === $user['password']) {
+                    
                     $_SESSION['user_id'] = $user['user_id'];
                     $_SESSION['user_name'] = $user['user_name'];
                     $_SESSION['type_user_id'] = $user['type_user_id'];
@@ -37,14 +35,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     header("Location: index.php");
                     exit();
                 } else {
-                    $erreur = "Mot de passe incorrect.";
+                    $erreur = "Identifiant ou mot de passe incorrect.";
                 }
             } else {
-                $erreur = "Identifiant introuvable.";
+                $erreur = "Identifiant ou mot de passe incorrect.";
             }
             $stmt->close();
-        } else {
-            $erreur = "Erreur de connexion à la base de données.";
+            $conn->close();
         }
     } else {
         $erreur = "Veuillez remplir tous les champs.";
@@ -65,11 +62,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <main class="main-content">
         <div class="login-card">
             <div class="logo-box">
-                <img src="assets/logo%20pont.png" alt="Logo PontConnect" style="max-width: 200px;">
+                <img src="assets/logo%20pont.png" alt="Logo PontConnect">
             </div>
             
             <h1>Connexion</h1>
-            <p class="intro" style="margin-top:0; padding:0; font-size:1rem;">Accès sécurisé au système de gestion</p>
+            <p class="intro">Accès sécurisé au système de gestion</p>
 
             <?php if (!empty($erreur)): ?>
                 <div class="error-msg"><?= htmlspecialchars($erreur) ?></div>
@@ -78,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <form action="login.php" method="POST" class="login-form">
                 <div class="input-group">
                     <label for="identifiant">Identifiant</label>
-                    <input type="text" id="identifiant" name="identifiant" required placeholder="Ex: admin_dk">
+                    <input type="text" id="identifiant" name="identifiant" required placeholder="Ex: admin_dk" value="<?= htmlspecialchars($_POST['identifiant'] ?? '') ?>">
                 </div>
 
                 <div class="input-group">
