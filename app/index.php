@@ -1,8 +1,15 @@
 <?php
 session_start();
 
-$username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Invité';
-$role = ($username === 'admin') ? 'Administrateur' : 'Utilisateur';
+// LE CADENAS : Si la variable de session 'user_id' n'existe pas, on redirige vers le login
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit(); // On stoppe l'exécution du script immédiatement
+}
+
+// On récupère les infos de l'utilisateur depuis la session
+$username = $_SESSION['user_name'];
+$role = ($_SESSION['type_user_id'] == 1) ? 'Administrateur' : 'Utilisateur';
 
 $host = 'db';
 $user = 'Etudiant';
@@ -12,7 +19,6 @@ $db   = 'pontconnecte';
 error_reporting(E_ALL ^ E_WARNING);
 $conn = new mysqli($host, $user, $pass, $db);
 
-// --- NOUVELLE GESTION DU BADGE DE STATUT ---
 $badge_class = "";
 $badge_text = "";
 
@@ -63,7 +69,6 @@ if ($conn->connect_error) {
         }
         .btn-logout:hover { background-color: #e74c3c; color: white; }
 
-        /* Correction pour empiler correctement le contenu central */
         .hero-card {
             display: flex;
             flex-direction: column;

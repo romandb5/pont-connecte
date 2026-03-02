@@ -1,98 +1,161 @@
-.login-page .main-content.full-width {
-    margin-left: 0; 
-    width: 100%;
+/* =========================================
+   STYLES DU BLOC DE CONNEXION / INSCRIPTION
+   ========================================= */
+
+/* Fond de la page : Un dégradé bleuté très clair pour amener de la couleur */
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e0eaf5 0%, #f4f7fa 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* On force la police moderne ! */
 }
 
+.login-page .main-content {
+    margin-left: 0; 
+    padding: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Le bloc central (adapté à la largeur des zones de texte) */
 .login-card {
-    max-width: 450px;
-    padding: 3rem 2.5rem;
+    background: #ffffff;
+    max-width: 420px; /* Plus étroit pour épouser les champs */
+    width: 100%;
+    padding: 40px 50px; /* Espacement interne équilibré */
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 51, 102, 0.15); /* Ombre bleutée */
+    border-top: 6px solid #ffb703; /* Barre Jaune Dunkerque en haut */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* On réduit légèrement le logo */
+.login-card .logo-box {
+    width: 160px;
+    /* margin: haut droite bas gauche -> 'auto' centre la boîte parfaitement */
+    margin: 0 auto 15px auto; 
+    display: flex;
+    justify-content: center;
+}
+
+.login-card .logo-box img {
+    width: 100%;
+    height: auto;
+    display: block;
+    /* L'astuce magique : on décale l'image de 8 pixels vers la gauche 
+       pour compenser le vide transparent de l'image d'origine ! */
+    transform: translateX(-8px); 
 }
 
 .login-card h1 {
-    font-size: 2.2rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+    color: #002d5a; /* Bleu profond */
+    margin-bottom: 5px;
+    font-weight: 800;
+}
+
+.login-card .intro {
+    color: #5a6c7d;
+    margin-bottom: 25px;
+    font-size: 0.95rem;
 }
 
 .login-form {
-    margin-top: 2rem;
+    width: 100%;
     text-align: left;
 }
 
 .input-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 20px;
 }
 
+/* Les titres au-dessus des cases */
 .input-group label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: var(--dk-blue-deep);
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: #004e92; /* Bleu maritime */
+    font-size: 0.95rem;
 }
 
+/* Les zones d'écriture */
 .input-group input {
     width: 100%;
+    box-sizing: border-box; /* <-- Ajoutez cette ligne de sécurité */
     padding: 12px 15px;
     border: 2px solid #cbd5e1;
     border-radius: 8px;
     font-size: 1rem;
-    transition: border-color 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: all 0.3s ease;
+    background-color: #f8fafc;
+    color: #002d5a;
 }
 
+/* Effet quand on clique dans une zone d'écriture */
 .input-group input:focus {
     outline: none;
-    border-color: var(--dk-accent-yellow);
-    box-shadow: 0 0 0 3px rgba(255, 159, 28, 0.2);
+    border-color: #ffb703; /* Devient jaune */
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(255, 183, 3, 0.15); 
 }
 
-.password-hint {
-    display: block;
-    font-size: 0.8rem;
-    color: #64748b;
-    margin-top: 5px;
-}
-
+/* === LE BOUTON REVISITÉ === */
 .btn-submit {
     width: 100%;
-    background: var(--dk-blue-gradient);
-    color: var(--dk-white);
+    background-color: #ffb703; /* JAUNE par défaut ! */
+    color: #002d5a; /* Texte en BLEU FONCÉ */
     border: none;
     padding: 14px;
     font-size: 1.1rem;
-    font-weight: bold;
+    font-weight: 900;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-top: 1rem;
+    margin-top: 15px;
+    box-shadow: 0 4px 15px rgba(255, 183, 3, 0.3); /* Ombre jaune */
 }
 
+/* Effet du bouton quand on passe la souris dessus */
 .btn-submit:hover {
-    background: var(--dk-accent-yellow);
-    color: var(--dk-blue-deep);
+    background-color: #002d5a; /* Devient BLEU */
+    color: #ffffff; /* Texte BLANC */
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 159, 28, 0.3);
+    box-shadow: 0 8px 20px rgba(0, 45, 90, 0.3); /* Ombre bleue */
 }
 
+/* Zone d'erreur */
 .error-msg {
+    width: 100%;
     background-color: #fee2e2;
     color: #ef4444;
-    padding: 10px;
+    padding: 12px;
     border-radius: 8px;
-    margin-top: 1rem;
-    font-weight: 500;
+    margin-bottom: 20px;
+    font-weight: 600;
     text-align: center;
     border: 1px solid #fca5a5;
+    font-size: 0.95rem;
 }
 
+/* Lien "Pas encore de compte" */
 .back-link {
     display: inline-block;
-    margin-top: 1.5rem;
-    color: #64748b;
+    margin-top: 25px;
+    color: #5a6c7d;
     text-decoration: none;
+    font-weight: 600;
     font-size: 0.9rem;
     transition: color 0.3s ease;
 }
 
 .back-link:hover {
-    color: var(--dk-blue-deep);
+    color: #002d5a;
     text-decoration: underline;
 }
