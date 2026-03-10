@@ -13,38 +13,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'] ?? '';
 
     if (!empty($identifiant) && !empty($password)) {
-        $conn = new mysqli('db', 'Etudiant', 'P@ssword', 'pontconnecte');
-        
-        if ($conn->connect_error) {
-            $erreur = "Erreur de connexion à la base de données.";
-        } else {
-            $stmt = $conn->prepare("SELECT user_id, user_name, password, type_user_id FROM utilisateurs WHERE user_name = ?");
-            $stmt->bind_param("s", $identifiant);
-            $stmt->execute();
-            $result = $stmt->get_result();
+        try {
+            // Configuration PDO
+            $host = 'db';
+            $db   = 'pontconnecte';
+            $user = 'Etudiant';
+            $pass = 'P@ssword';
 
-            if ($result->num_rows === 1) {
-                $user = $result->fetch_assoc();
-                
-                if ($password === $user['password']) {
-                    
-                    $_SESSION['user_id'] = $user['user_id'];
-                    $_SESSION['user_name'] = $user['user_name'];
-                    $_SESSION['type_user_id'] = $user['type_user_id'];
+            // Création de la connexion
+            $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            // Requête préparée PDO
+            $stmt = $pdo->prepare("SELECT user_id, user_name, password, type_user_id FROM utilisateurs WHERE user_name = :identifiant");
+            $stmt->execute(['identifiant' => $identifiant]);
+            $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user_data) {
+                // Comparaison en texte clair pour vos tests
+                if ($password === $user_data['password']) {
+                    $_SESSION['user_id'] = $user_data['user_id'];
+                    $_SESSION['user_name'] = $user_data['user_name'];
+                    $_SESSION['type_user_id'] = $user_data['type_user_id'];
                     
                     header("Location: index.php");
                     exit();
                 } else {
-                    $erreur = "Identifiant ou mot de passe incorrect.";
+                    $erreur = "Mot de passe incorrect.";
                 }
             } else {
-                $erreur = "Identifiant ou mot de passe incorrect.";
+                $erreur = "Identifiant inconnu.";
             }
-            $stmt->close();
-            $conn->close();
+
+        } catch (PDOException $e) {
+            // Message d'erreur personnalisé
+            if (strpos($e->getMessage(), 'could not find driver') !== false) {
+                $erreur = "Le driver PDO MySQL n'est pas activé dans Docker.";
+            } else {
+                $erreur = "Erreur de base de données : " . $e->getMessage();
+            }
         }
-    } else {
-        $erreur = "Veuillez remplir tous les champs.";
     }
 }
 ?>
@@ -58,13 +66,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="css/style2.css?v=<?= time(); ?>">
 </head>
 <body class="login-page">
-
     <main class="main-content">
         <div class="login-card">
             <div class="logo-box">
                 <img src="assets/logo%20pont.png" alt="Logo PontConnect">
             </div>
-            
             <h1>Connexion</h1>
             <p class="intro">Accès sécurisé au système de gestion</p>
 
@@ -77,18 +83,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label for="identifiant">Identifiant</label>
                     <input type="text" id="identifiant" name="identifiant" required placeholder="Ex: admin_dk" value="<?= htmlspecialchars($_POST['identifiant'] ?? '') ?>">
                 </div>
-
                 <div class="input-group">
                     <label for="password">Mot de passe</label>
                     <input type="password" id="password" name="password" required placeholder="••••••••">
                 </div>
-
                 <button type="submit" class="btn-submit">Se Connecter</button>
             </form>
-            
             <a href="register.php" class="back-link">Pas encore de compte ? S'inscrire</a>
         </div>
     </main>
-
 </body>
 </html>

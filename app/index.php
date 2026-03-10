@@ -1,33 +1,33 @@
 <?php
 session_start();
 
-// LE CADENAS : Si la variable de session 'user_id' n'existe pas, on redirige vers le login
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
-    exit(); // On stoppe l'exécution du script immédiatement
+    exit();
 }
 
-// On récupère les infos de l'utilisateur depuis la session
 $username = $_SESSION['user_name'];
 $role = ($_SESSION['type_user_id'] == 1) ? 'Administrateur' : 'Utilisateur';
 
+// Paramètres de connexion
 $host = 'db';
+$db   = 'pontconnecte';
 $user = 'Etudiant';
 $pass = 'P@ssword';
-$db   = 'pontconnecte';
-
-error_reporting(E_ALL ^ E_WARNING);
-$conn = new mysqli($host, $user, $pass, $db);
 
 $badge_class = "";
 $badge_text = "";
 
-if ($conn->connect_error) {
-    $badge_class = "error";
-    $badge_text = "● Erreur BDD";
-} else {
+try {
+    // Connexion via PDO
+    $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
     $badge_class = "success";
     $badge_text = "● Système en ligne";
+} catch (PDOException $e) {
+    $badge_class = "error";
+    $badge_text = "● Erreur BDD";
 }
 ?>
 

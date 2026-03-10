@@ -1,12 +1,5 @@
 <?php
 session_start();
-
-// Si l'utilisateur est déjà connecté, on l'envoie sur l'accueil
-if (isset($_SESSION['user_id'])) {
-    header("Location: index.php");
-    exit();
-}
-
 $erreur = "";
 $succes = "";
 
@@ -14,52 +7,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $identifiant = $_POST['identifiant'] ?? '';
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
-    $confirm_password = $_POST['confirm_password'] ?? '';
 
-    // 1. Validation de base
-    if (!preg_match('/^[a-zA-Z0-9]+$/', $identifiant)) {
-        $erreur = "L'identifiant doit être uniquement alphanumérique.";
-    } 
-    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $erreur = "L'adresse email n'est pas valide.";
-    }
-    elseif (!preg_match('/^(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$/', $password)) {
-        $erreur = "Le mot de passe ne respecte pas les critères de sécurité (8 car. min, 1 majuscule, 1 chiffre, 1 spécial).";
-    } 
-    elseif ($password !== $confirm_password) {
-        $erreur = "Les mots de passe ne correspondent pas.";
-    } else {
-        // 2. Connexion à la base de données
-        $conn = new mysqli('db', 'Etudiant', 'P@ssword', 'pontconnecte');
-        
-        if ($conn->connect_error) {
-            $erreur = "Erreur de connexion à la base de données.";
-        } else {
-            // 3. Vérification de l'existence de l'utilisateur ou de l'email
-            $check = $conn->prepare("SELECT user_id FROM utilisateurs WHERE user_name = ? OR email = ?");
-            $check->bind_param("ss", $identifiant, $email);
-            $check->execute();
-            if ($check->get_result()->num_rows > 0) {
-                $erreur = "L'identifiant ou l'email est déjà utilisé.";
-            } else {
-                // 4. Préparation des données pour l'insertion
-                $type_user_defaut = 2; // Rôle 'Utilisateur' par défaut
-                $date_now = date('Y-m-d H:i:s');
+    try {
+        $pdo = new PDO("mysql:host=db;dbname=pontconnecte;charset=utf8", "Etudiant", "P@ssword");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-                // --- MODIFICATION : Insertion du mot de passe en CLAIR ---
-                $insert = $conn->prepare("INSERT INTO utilisateurs (user_name, email, password, date_creation, type_user_id) VALUES (?, ?, ?, ?, ?)");
-                $insert->bind_param("ssssi", $identifiant, $email, $password, $date_now, $type_user_defaut);
-                
-                if ($insert->execute()) {
-                    $succes = "Compte créé avec succès ! Vous pouvez vous connecter.";
-                } else {
-                    $erreur = "Erreur technique lors de la création.";
-                }
-                $insert->close();
-            }
-            $check->close();
-            $conn->close();
-        }
+        $sql = "INSERT INTO utilisateurs (user_name, email, password, date_creation, type_user_id) 
+                VALUES (:user, :email, :pass, NOW(), 2)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'user'  => $identifiant,
+            'email' => $email,
+            'pass'  => $password
+        ]);
+        $succes = "Compte créé avec succès !";
+    } catch (PDOException $e) {
+        $erreur = "Erreur : " . $e->getMessage();
     }
 }
 ?>
