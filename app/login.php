@@ -14,23 +14,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!empty($identifiant) && !empty($password)) {
         try {
-            // Configuration PDO
             $host = 'db';
             $db   = 'pontconnecte';
             $user = 'Etudiant';
             $pass = 'P@ssword';
 
-            // Création de la connexion
             $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            // Requête préparée PDO
             $stmt = $pdo->prepare("SELECT user_id, user_name, password, type_user_id FROM utilisateurs WHERE user_name = :identifiant");
             $stmt->execute(['identifiant' => $identifiant]);
             $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($user_data) {
-                // Comparaison en texte clair pour vos tests
                 if ($password === $user_data['password']) {
                     $_SESSION['user_id'] = $user_data['user_id'];
                     $_SESSION['user_name'] = $user_data['user_name'];
@@ -46,7 +42,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
         } catch (PDOException $e) {
-            // Message d'erreur personnalisé
             if (strpos($e->getMessage(), 'could not find driver') !== false) {
                 $erreur = "Le driver PDO MySQL n'est pas activé dans Docker.";
             } else {
