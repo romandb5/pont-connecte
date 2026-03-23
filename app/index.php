@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id'])) {
 $username = $_SESSION['user_name'];
 $role = ($_SESSION['type_user_id'] == 1) ? 'Administrateur' : 'Utilisateur';
 
-// Paramètres de connexion
 $host = 'db';
 $db   = 'pontconnecte';
 $user = 'Etudiant';
@@ -19,7 +18,6 @@ $badge_class = "";
 $badge_text = "";
 
 try {
-    // Connexion via PDO
     $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
