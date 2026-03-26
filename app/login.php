@@ -14,6 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!empty($identifiant) && !empty($password)) {
         try {
+            // Configuration PDO
             $host = 'db';
             $db   = 'pontconnecte';
             $user = 'Etudiant';
@@ -22,16 +23,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            $stmt = $pdo->prepare("SELECT user_id, user_name, password, type_user_id FROM utilisateurs WHERE user_name = :identifiant");
+            // --- MISE À JOUR : On interroge la nouvelle table USERS ---
+            $stmt = $pdo->prepare("SELECT USER_ID, USER_NAME, PASSWORD, TYPE_USER_ID FROM USERS WHERE USER_NAME = :identifiant");
             $stmt->execute(['identifiant' => $identifiant]);
             $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($user_data) {
-                if ($password === $user_data['password']) {
-                    $_SESSION['user_id'] = $user_data['user_id'];
-                    $_SESSION['user_name'] = $user_data['user_name'];
-                    $_SESSION['type_user_id'] = $user_data['type_user_id'];
+                // Comparaison du mot de passe en texte clair (selon vos données de test)
+                if ($password === $user_data['PASSWORD']) {
                     
+                    // On remplit la session (je garde les clés en minuscules pour ne pas casser le reste de votre site)
+                    $_SESSION['user_id'] = $user_data['USER_ID'];
+                    $_SESSION['user_name'] = $user_data['USER_NAME'];
+                    $_SESSION['type_user_id'] = $user_data['TYPE_USER_ID'];
+                    
+                    // --- BONUS : Mise à jour de la colonne LAST_SIGN ---
+                    $update_sign = $pdo->prepare("UPDATE USERS SET LAST_SIGN = NOW() WHERE USER_ID = :id");
+                    $update_sign->execute(['id' => $user_data['USER_ID']]);
+
                     header("Location: index.php");
                     exit();
                 } else {
@@ -42,12 +51,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
         } catch (PDOException $e) {
+            // Message d'erreur personnalisé
             if (strpos($e->getMessage(), 'could not find driver') !== false) {
                 $erreur = "Le driver PDO MySQL n'est pas activé dans Docker.";
             } else {
                 $erreur = "Erreur de base de données : " . $e->getMessage();
             }
         }
+    } else {
+        $erreur = "Veuillez remplir tous les champs.";
     }
 }
 ?>
@@ -76,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <form action="login.php" method="POST" class="login-form">
                 <div class="input-group">
                     <label for="identifiant">Identifiant</label>
-                    <input type="text" id="identifiant" name="identifiant" required placeholder="Ex: admin_dk" value="<?= htmlspecialchars($_POST['identifiant'] ?? '') ?>">
+                    <input type="text" id="identifiant" name="identifiant" required placeholder="Ex: admin" value="<?= htmlspecialchars($_POST['identifiant'] ?? '') ?>">
                 </div>
                 <div class="input-group">
                     <label for="password">Mot de passe</label>
