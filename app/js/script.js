@@ -4,40 +4,38 @@
 // ==========================================
 
 function mettreAJourHeuresPrecises() {
-    const selectCreneau = document.getElementById('horaires_id');
+    const selectCreneau = document.getElementById('bloc_creneau');
     const selectHeure = document.getElementById('heure_reservation');
     
-    // On récupère l'option actuellement sélectionnée dans la liste
-    const optionSelectionnee = selectCreneau.options[selectCreneau.selectedIndex];
-
     // On vide la liste des heures
     selectHeure.innerHTML = '<option value="">-- Choisir une heure --</option>';
 
-    // Si l'utilisateur remet sur la valeur par défaut
     if (!selectCreneau.value) {
-        selectHeure.innerHTML = '<option value="">-- Sélectionnez d\'abord un créneau --</option>';
+        selectHeure.innerHTML = '<option value="">-- Sélectionnez d\'abord une période --</option>';
         return;
     }
 
-    // On récupère les heures cachées dans le HTML par PHP
-    const heuresDuCreneau = [
-        optionSelectionnee.getAttribute('data-h0'),
-        optionSelectionnee.getAttribute('data-h1'),
-        optionSelectionnee.getAttribute('data-h2'),
-        optionSelectionnee.getAttribute('data-h3')
-    ];
+    const optionSelectionnee = selectCreneau.options[selectCreneau.selectedIndex];
+    
+    // On récupère le tableau JSON caché généré par PHP
+    const heuresJson = optionSelectionnee.getAttribute('data-heures');
 
-    // On crée les nouvelles options pour chaque heure qui existe dans la BDD
-    heuresDuCreneau.forEach(function(heure) {
-        // Si la BDD contient une heure (et n'est pas NULL ni vide)
-        if (heure && heure !== 'null' && heure.trim() !== '') {
-            // On enlève les secondes pour l'affichage (ex: 08:30:00 -> 08:30)
+    if (heuresJson) {
+        // On transforme le texte JSON en vrai tableau JavaScript
+        const heuresTableau = JSON.parse(heuresJson);
+
+        heuresTableau.forEach(function(combo) {
+            // "combo" ressemble à "12|08:30:00" (HORAIRES_ID | HEURE_PRECISE)
+            let parts = combo.split('|');
+            let heure = parts[1]; // On ne prend que la partie "08:30:00" pour l'affichage
+            
+            // On enlève les secondes pour que ce soit plus joli (ex: 08:30)
             let heureAffichee = heure.substring(0, 5); 
             
             let option = document.createElement('option');
-            option.value = heure; // Format BDD complet (HH:MM:SS) envoyé lors de la réservation
+            option.value = combo; // C'est le combo entier qui sera envoyé au PHP !
             option.text = heureAffichee;
             selectHeure.appendChild(option);
-        }
-    });
+        });
+    }
 }
