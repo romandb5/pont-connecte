@@ -22,7 +22,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($user_data) {
-                if ($password === $user_data['PASSWORD']) {
+                // password_verify compare le mot de passe tapé avec le hash de la BDD
+                if (password_verify($password, $user_data['PASSWORD'])) {
                     
                     $_SESSION['user_id'] = $user_data['USER_ID'];
                     $_SESSION['user_name'] = $user_data['USER_NAME'];

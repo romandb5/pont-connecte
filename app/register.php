@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Si l'utilisateur est déjà connecté, on l'envoie sur l'accueil
 if (isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit();
@@ -16,7 +15,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
 
-    // 1. Validation de base
     if (!preg_match('/^[a-zA-Z0-9_]+$/', $identifiant)) { 
         $erreur = "L'identifiant doit être alphanumérique (les underscores sont autorisés).";
     } 
@@ -30,14 +28,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $pdo = new PDO("mysql:host=db;dbname=pontconnecte;charset=utf8", "Etudiant", "P@ssword");
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            // Vérification de l'existence
             $check = $pdo->prepare("SELECT USER_ID FROM USERS WHERE USER_NAME = :user OR EMAIL = :email");
             $check->execute(['user' => $identifiant, 'email' => $email]);
             
             if ($check->rowCount() > 0) {
                 $erreur = "L'identifiant ou l'email est déjà utilisé.";
             } else {
-                $type_user_defaut = 4; // Rôle 'Plaisancier' par défaut
+                $type_user_defaut = 4;
+
+                // --- NOUVEAU : HACHAGE DU MOT DE PASSE ---
+                // PASSWORD_DEFAULT utilise l'algorithme le plus fort actuel (Bcrypt)
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
                 $sql = "INSERT INTO USERS (USER_NAME, EMAIL, PASSWORD, CREATED_AT, TYPE_USER_ID) 
                         VALUES (:user, :email, :pass, NOW(), :type)";
@@ -46,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $insert->execute([
                     'user' => $identifiant,
                     'email' => $email,
-                    'pass' => $password, 
+                    'pass' => $hashed_password, // On insère le Hash, pas le mot de passe en clair !
                     'type' => $type_user_defaut
                 ]);
 
