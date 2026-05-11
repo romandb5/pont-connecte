@@ -32,6 +32,19 @@ def connect_db():
         database=DB_NAME
     )
 
+def nettoyer_anciennes_donnees(db):
+    try:
+        cursor = db.cursor()
+        # On supprime tout ce qui est plus vieux que 24 heures
+        sql = "DELETE FROM MESURES_CAPTEURS WHERE DATE_MESURE < (NOW() - INTERVAL 24 HOUR)"
+        cursor.execute(sql)
+        db.commit()
+        if cursor.rowcount > 0:
+            print(f"🧹 Ménage : {cursor.rowcount} anciennes mesures supprimées.")
+        cursor.close()
+    except Exception as e:
+        print(f"⚠️ Erreur lors du nettoyage : {e}")
+
 def on_message(client, userdata, msg):
     print(f"\n📦 Nouveau message LoRaWAN reçu !")
     
@@ -68,10 +81,12 @@ def on_message(client, userdata, msg):
                 insertions_reussies += 1
 
         db.commit()
+        
+        nettoyer_anciennes_donnees(db) 
+        
         cursor.close()
         db.close()
-        
-        print(f"✅ {insertions_reussies} nouvelles mesures insérées dans la base de données !")
+        print(f"✅ Données insérées et base de données nettoyée.")
 
     except Exception as e:
         print(f"❌ Erreur lors du traitement : {e}")
