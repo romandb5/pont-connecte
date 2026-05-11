@@ -15,6 +15,8 @@ services:
       - POSTGRESQL_HOST=postgres
     ports:
       - "8082:8080"
+    networks:
+      - pnt-connect-network
 
   chirpstack-gateway-bridge:
     image: chirpstack/chirpstack-gateway-bridge:4
@@ -29,6 +31,8 @@ services:
       - INTEGRATION__MQTT__COMMAND_TOPIC_TEMPLATE=eu868/gateway/{{ .GatewayID }}/command/#
     depends_on:
       - mosquitto
+    networks:
+      - pnt-connect-network
   
   chirpstack-gateway-bridge-basicstation:
     image: chirpstack/chirpstack-gateway-bridge:4
@@ -40,6 +44,8 @@ services:
       - ./configuration/chirpstack-gateway-bridge:/etc/chirpstack-gateway-bridge
     depends_on:
       - mosquitto
+    networks:
+      - pnt-connect-network
 
   chirpstack-rest-api:
     image: chirpstack/chirpstack-rest-api:4
@@ -49,6 +55,8 @@ services:
       - "8090:8090"
     depends_on:
       - chirpstack
+    networks:
+      - pnt-connect-network
 
   postgres:
     image: postgres:14-alpine
@@ -60,6 +68,8 @@ services:
       - POSTGRES_USER=chirpstack
       - POSTGRES_PASSWORD=chirpstack
       - POSTGRES_DB=chirpstack
+    networks:
+      - pnt-connect-network
 
   redis:
     image: redis:7-alpine
@@ -67,6 +77,8 @@ services:
     command: redis-server --save 300 1 --save 60 100 --appendonly no
     volumes:
       - redisdata:/data
+    networks:
+      - pnt-connect-network
 
   mosquitto:
     image: eclipse-mosquitto:2
@@ -75,7 +87,13 @@ services:
       - "1883:1883"
     volumes: 
       - ./configuration/mosquitto/config/:/mosquitto/config/
+    networks:
+      - pnt-connect-network
 
 volumes:
   postgresqldata:
   redisdata:
+
+networks:
+  pnt-connect-network:
+    external: true

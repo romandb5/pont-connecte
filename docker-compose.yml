@@ -1,6 +1,6 @@
 services:
   php-app:
-    build: .             
+    build: . 
     container_name: pont-connect-web
     restart: always
     ports:
@@ -8,9 +8,11 @@ services:
     volumes:
       - ./app:/var/www/html  
     depends_on:
-      - db
+      - db-web
+    networks:
+      - pnt-connect-network
 
-  db:
+  db-web:
     image: mysql:latest
     container_name: mysql_db
     restart: always
@@ -24,18 +26,26 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./mysql-init:/docker-entrypoint-initdb.d 
+    networks:
+      - pnt-connect-network
 
   phpmyadmin:
     image: phpmyadmin:latest
     container_name: phpmyadmin_gui
     restart: always
     depends_on:
-      - db
+      - db-web
     ports:
       - "8081:80"
     environment:
-      PMA_HOST: db
+      PMA_HOST: db-web
       MYSQL_ROOT_PASSWORD: root_password
+    networks:
+      - pnt-connect-network
 
 volumes:
   db_data:
+
+networks:
+  pnt-connect-network:
+    external: true
