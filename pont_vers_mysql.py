@@ -14,7 +14,7 @@ MQTT_BROKER = "localhost"
 MQTT_PORT = 1883
 MQTT_TOPIC = "application/+/device/+/event/up" 
 
-# --- LE MAPPING MAGIQUE (ID de tes capteurs) ---
+# --- LE MAPPING (ID des capteurs) ---
 MAPPING_CAPTEURS = {
     "vibration_m_s2": 1,      # ID 1 : mma8451
     "tds_ppm": 2,             # ID 2 : TDS Meter
