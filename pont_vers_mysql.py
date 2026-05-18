@@ -55,10 +55,10 @@ def on_message(client, userdata, msg):
         data = payload.get("object") or payload.get("objectJSON")
         
         if type(data) is str:
-            data = json.loads(data) # Parfois c'est une string qu'il faut re-parser
+            data = json.loads(data) 
             
         if not data:
-            print("Aucune donnée décodée (vérifie ton codec ChirpStack).")
+            print("Aucune donnée décodée (vérifier le codec ChirpStack).")
             return
 
         db = connect_db()

@@ -36,7 +36,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else {
                 $type_user_defaut = 4;
 
-                // --- NOUVEAU : HACHAGE DU MOT DE PASSE ---
                 // PASSWORD_DEFAULT utilise l'algorithme le plus fort actuel (Bcrypt)
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
