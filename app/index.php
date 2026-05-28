@@ -8,7 +8,14 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 $username = $_SESSION['user_name'];
-$role = ($_SESSION['type_user_id'] == 1) ? 'Administrateur' : 'Utilisateur';
+
+if ($_SESSION['type_user_id'] == 1) {
+    $role = 'Administrateur';
+} elseif ($_SESSION['type_user_id'] == 2) {
+    $role = 'Opérateur Pont';
+} else {
+    $role = 'Utilisateur';
+}
 
 $message = "";
 $message_type = "";
@@ -110,8 +117,12 @@ try {
 
         <ul class="nav-links">
             <li><a href="index.php" class="active">Accueil</a></li>
-            <li><a href="reservation.php">Réservation</a></li> 
-            <li><a href="gestion-capteur.php">Gestion Capteur</a></li>
+            <li><a href="reservation.php">Réservation</a></li>
+    
+            <?php if ($_SESSION['type_user_id'] == 1 || $_SESSION['type_user_id'] == 2): ?>
+                <li><a href="gestion-capteur.php">Gestion Capteur</a></li>
+            <?php endif; ?>
+    
             <li><a href="#">Aide</a></li>
             <li><a href="#">Contact</a></li>
         </ul>
