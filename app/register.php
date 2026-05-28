@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($check->rowCount() > 0) {
                 $erreur = "L'identifiant ou l'email est déjà utilisé.";
             } else {
-                $type_user_defaut = 4;
+                $type_user_defaut = 3;
 
                 // PASSWORD_DEFAULT utilise l'algorithme le plus fort actuel (Bcrypt)
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
