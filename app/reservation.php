@@ -90,7 +90,6 @@ try {
         // ACTION ADMIN : VALIDER
         elseif (isset($_POST['action']) && $_POST['action'] == 'valider' && $is_admin) {
             $res_id = $_POST['reservation_id'];
-            // On passe le statut à 2 (Validé)
             $sql = "UPDATE RESERVATION SET STATUS_ID = 2 WHERE RESERVATION_ID = :res_id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute(['res_id' => $res_id]);
@@ -111,13 +110,31 @@ try {
             header("Location: reservation.php");
             exit(); 
         }
+        
+        // ACTION ADMIN : OUVRIR LE PONT
+        elseif (isset($_POST['action']) && $_POST['action'] == 'ouvrir_pont' && $is_admin) {
+            // ICI : Vous pourrez ajouter plus tard la logique MQTT ou API pour envoyer l'ordre à l'ESP32
+            $_SESSION['flash_message'] = "Commande envoyée : Le pont est en cours d'OUVERTURE.";
+            $_SESSION['flash_type'] = "success";
+            header("Location: reservation.php");
+            exit(); 
+        }
+
+        // ACTION ADMIN : FERMER LE PONT
+        elseif (isset($_POST['action']) && $_POST['action'] == 'fermer_pont' && $is_admin) {
+            // ICI : Vous pourrez ajouter plus tard la logique MQTT ou API pour envoyer l'ordre à l'ESP32
+            $_SESSION['flash_message'] = "Commande envoyée : Le pont est en cours de FERMETURE.";
+            $_SESSION['flash_type'] = "success";
+            header("Location: reservation.php");
+            exit(); 
+        }
     }
 
     // ==========================================
     // RÉCUPÉRATION DES DONNÉES (POUR AFFICHAGE)
     // ==========================================
     
-    // Requête principale commune (On ajoute le nom de l'utilisateur pour l'admin)
+    // Requête principale commune
     $sql_mes_res = "SELECT r.RESERVATION_ID, r.DATE_RESERVATION, p.LIBELLE_PONT, b.LIBELLE_BATEAU, pc.LIBELLE_PERIODE, d.LIBELLE_DIRECTION_CRENEAU, s.LIBELLE_STATUS, u.USER_NAME
                     FROM RESERVATION r 
                     JOIN PONTS p ON r.PONT_ID = p.PONT_ID 
@@ -188,6 +205,95 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PontConnect - Réservation</title>
     <link rel="stylesheet" href="css/style.css?v=<?= time(); ?>">
+    <style>
+        .bridge-control-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            margin-top: 40px;
+            border-top: 5px solid #FFB703; 
+        }
+        
+        .bridge-control-panel h2 {
+            color: #003366;
+            margin-bottom: 5px;
+        }
+        
+        .bridge-control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .btn-open, .btn-close {
+            background-color: #003366; 
+            color: white;
+            border: 2px solid #003366;
+            padding: 12px 40px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+        }
+        
+        .btn-open:hover, .btn-close:hover {
+            background-color: #FFB703; 
+            color: #003366;
+            border-color: #FFB703;
+        }
+
+        /* =========================================
+           MODAL DE CONFIRMATION PERSONNALISÉ
+           ========================================= */
+        .custom-modal-overlay {
+            display: none; 
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 51, 102, 0.7); 
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px); 
+        }
+        
+        .custom-modal {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            max-width: 450px;
+            text-align: center;
+            border-top: 5px solid #FFB703;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .custom-modal h3 { color: #003366; margin-top: 0; font-size: 1.4rem; }
+        .custom-modal p { color: #555; margin-bottom: 25px; line-height: 1.5; }
+        .modal-buttons { display: flex; justify-content: center; gap: 15px; }
+        
+        .btn-cancel-modal {
+            background: #e0e0e0; color: #333; border: none; padding: 10px 25px; 
+            border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        .btn-cancel-modal:hover { background: #c8c8c8; }
+        
+        .btn-confirm-modal {
+            background: #003366; color: white; border: none; padding: 10px 25px; 
+            border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        .btn-confirm-modal:hover { background: #FFB703; color: #003366; }
+    </style>
 </head>
 <body>
 
@@ -273,6 +379,24 @@ try {
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
+            </section>
+
+            <!-- PANNEAU DE CONTRÔLE DU PONT -->
+            <section class="bridge-control-panel">
+                <h2>Contrôle Manuel du Pont</h2>
+                <p style="color: gray;">Actionnez les moteurs pour laisser passer les navires.</p>
+                
+                <div class="bridge-control-buttons">
+                    <form id="form-ouvrir" action="reservation.php" method="POST">
+                        <input type="hidden" name="action" value="ouvrir_pont">
+                        <button type="button" class="btn-open" onclick="ouvrirModalCustom('ouvrir')">Ouvrir le pont</button>
+                    </form>
+
+                    <form id="form-fermer" action="reservation.php" method="POST">
+                        <input type="hidden" name="action" value="fermer_pont">
+                        <button type="button" class="btn-close" onclick="ouvrirModalCustom('fermer')">Fermer le pont</button>
+                    </form>
+                </div>
             </section>
 
         <?php else: ?>
@@ -365,5 +489,52 @@ try {
     <?php if (!$is_admin): ?>
         <script src="js/script.js?v=<?= time(); ?>"></script>
     <?php endif; ?>
+
+    <div class="custom-modal-overlay" id="modal-securite">
+        <div class="custom-modal">
+            <h3 id="modal-titre">Confirmation Requise</h3>
+            <p id="modal-texte">Êtes-vous sûr ?</p>
+            <div class="modal-buttons">
+                <button class="btn-cancel-modal" onclick="fermerModalCustom()">Annuler</button>
+                <button class="btn-confirm-modal" id="btn-valider-modal">Confirmer l'action</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let formulaireEnAttente = ''; // Va stocker l'ID du formulaire à envoyer
+
+        // Fonction pour ouvrir la fenêtre et changer le texte selon le bouton cliqué
+        function ouvrirModalCustom(action) {
+            const modal = document.getElementById('modal-securite');
+            const titre = document.getElementById('modal-titre');
+            const texte = document.getElementById('modal-texte');
+
+            if (action === 'ouvrir') {
+                titre.innerText = '⚠️ Ouverture du Pont';
+                texte.innerText = 'Êtes-vous sûr de vouloir OUVRIR le pont à la circulation maritime ? Cette action bloquera la route.';
+                formulaireEnAttente = 'form-ouvrir';
+            } else if (action === 'fermer') {
+                titre.innerText = '⚠️ Fermeture du Pont';
+                texte.innerText = 'Êtes-vous sûr de vouloir FERMER le pont ? Vérifiez qu\'aucun navire n\'est engagé avant de rétablir la route.';
+                formulaireEnAttente = 'form-fermer';
+            }
+
+            modal.style.display = 'flex'; // Affiche la fenêtre
+        }
+
+        // Fonction pour cacher la fenêtre
+        function fermerModalCustom() {
+            document.getElementById('modal-securite').style.display = 'none';
+            formulaireEnAttente = '';
+        }
+
+        // Si l'admin clique sur "Confirmer", on valide enfin le formulaire stocké
+        document.getElementById('btn-valider-modal').addEventListener('click', function() {
+            if (formulaireEnAttente !== '') {
+                document.getElementById(formulaireEnAttente).submit();
+            }
+        });
+    </script>
 </body>
 </html>
