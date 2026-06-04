@@ -123,8 +123,8 @@ try {
                 <li><a href="gestion-capteur.php">Gestion Capteur</a></li>
             <?php endif; ?>
     
+            <li><a href="historique.php">Historique passages</a></li>
             <li><a href="#">Aide</a></li>
-            <li><a href="#">Contact</a></li>
         </ul>
 
         <div class="sidebar-footer"><a href="logout.php" class="btn-logout">Déconnexion</a></div>
