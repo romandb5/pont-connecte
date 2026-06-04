@@ -14,9 +14,12 @@ MQTT_BROKER = "localhost"
 MQTT_PORT = 1883
 MQTT_TOPIC = "application/+/device/+/event/up" 
 
+# ====================================================================
 # --- LE MAPPING (ID des capteurs) ---
+# ====================================================================
 MAPPING_CAPTEURS = {
-    "vibration_m_s2": 1,      # ID 1 : mma8451
+    "vibration1_m_s2": 1,     # ID 1 : mma8451 N°1 
+    "vibration2_m_s2": 6,     # ID 6 : mma8451 N°2 
     "tds_ppm": 2,             # ID 2 : TDS Meter
     "temperature_c": 3,       # ID 3 : DS18B20
     "profondeur_eau_mm": 4,   # ID 4 : SN0257
@@ -86,7 +89,7 @@ def on_message(client, userdata, msg):
         
         cursor.close()
         db.close()
-        print(f"✅ Données insérées et base de données nettoyée.")
+        print(f"✅ {insertions_reussies} données insérées et base de données nettoyée.")
 
     except Exception as e:
         print(f"❌ Erreur lors du traitement : {e}")
