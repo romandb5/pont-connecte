@@ -113,7 +113,6 @@ try {
         
         // ACTION ADMIN : OUVRIR LE PONT
         elseif (isset($_POST['action']) && $_POST['action'] == 'ouvrir_pont' && $is_admin) {
-            // ICI : Vous pourrez ajouter plus tard la logique MQTT ou API pour envoyer l'ordre à l'ESP32
             $_SESSION['flash_message'] = "Commande envoyée : Le pont est en cours d'OUVERTURE.";
             $_SESSION['flash_type'] = "success";
             header("Location: reservation.php");
@@ -122,7 +121,6 @@ try {
 
         // ACTION ADMIN : FERMER LE PONT
         elseif (isset($_POST['action']) && $_POST['action'] == 'fermer_pont' && $is_admin) {
-            // ICI : Vous pourrez ajouter plus tard la logique MQTT ou API pour envoyer l'ordre à l'ESP32
             $_SESSION['flash_message'] = "Commande envoyée : Le pont est en cours de FERMETURE.";
             $_SESSION['flash_type'] = "success";
             header("Location: reservation.php");

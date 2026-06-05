@@ -24,7 +24,7 @@ try {
     $pdo = new PDO("mysql:host=db-web;dbname=pontconnecte;charset=utf8", "Etudiant", "P@ssword");
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // MODIFICATION ICI : On filtre avec "m.VALEUR > 0" pour n'avoir QUE les détections.
+    // On filtre avec "m.VALEUR > 0" pour n'avoir QUE les détections.
     // On limite à 50 résultats pour ne pas charger la base de données inutilement.
     $sql = "SELECT m.DATE_MESURE as date_heure, m.VALEUR as navire_present 
             FROM MESURES_CAPTEURS m
@@ -61,7 +61,7 @@ try {
             border-top: 5px solid var(--dk-yellow, #FFB703);
             margin-top: 30px;
             
-            /* MODIFICATION ICI : Bloque la hauteur et ajoute un scroll interne */
+            /* Bloque la hauteur et ajoute un scroll interne */
             max-height: 500px; 
             overflow-y: auto;
         }
