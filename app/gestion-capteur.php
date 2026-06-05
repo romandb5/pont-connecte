@@ -188,7 +188,7 @@ try {
             <li><a href="reservation.php">Réservation</a></li>
             <li><a href="gestion-capteur.php" class="active">Gestion Capteur</a></li>
             <li><a href="historique.php">Historique passages</a></li>
-            <li><a href="#">Aide</a></li>
+            <li><a href="maintenance.php">Maintenance</a></li>
         </ul>
 
         <div class="sidebar-footer"><a href="logout.php" class="btn-logout">Déconnexion</a></div>

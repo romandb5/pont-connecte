@@ -122,8 +122,8 @@ try {
             <?php if ($_SESSION['type_user_id'] == 1 || $_SESSION['type_user_id'] == 2): ?>
                 <li><a href="gestion-capteur.php">Gestion Capteur</a></li>
                 <li><a href="historique.php">Historique passages</a></li>
+                <li><a href="maintenance.php">Maintenance</a></li>
             <?php endif; ?>
-            <li><a href="#">Aide</a></li>
         </ul>
 
         <div class="sidebar-footer"><a href="logout.php" class="btn-logout">Déconnexion</a></div>
